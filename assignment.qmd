@@ -43,10 +43,9 @@ Now Combine (stack) the two dataframes into one combined dataframe, so all the r
 
 ```{r}
 
+dem_rep <-
 
-
-
-
+full_join(primary_dem, primary_rep)
 
 ```
 
@@ -60,7 +59,9 @@ To use clean_names() you apply it to your dataframe like:
 
 ```{r}
 
+clean_dem_rep <- dem_rep %>%
 
+clean_names()
 
 
 
@@ -80,10 +81,7 @@ Next use left_join() to join the two tables based on the unique combination of p
 
 ```{r}
 
-
-
-
-
+dem_rep_precinct <- left_join(clean_dem_rep, precinct_voting_locations, by = c("county" = "county_code", "election_district_precinct" = "precinct_code"))
 
 ```
 
@@ -95,7 +93,8 @@ Write code to produce a `votes` column which is the result of adding together `e
 
 ```{r}
 
-
+dem_rep_precinct%>%
+  mutate(total_votes = election_night_votes + early_votes+ provisional_votes)
 
 ```
 
@@ -104,12 +103,18 @@ Next, separately write code to show each county and precinct and calculate the t
 ```{r}
 
 
-
+dem_rep_precinct%>%
+  mutate(total_votes = election_night_votes + early_votes+ provisional_votes)%>%
+  group_by(election_district_precinct)%>%
+  summarize(precinct_votes = sum(total_votes))%>%
+  arrange(desc(precinct_votes))
 
 
 ```
 
 What is the name and voting location of the precinct that saw the most votes in the governor's race? *Put answer here*
+
+1001, Linthicum Es
 
 ### Q2.
 
@@ -118,6 +123,11 @@ Let's look at the average number of votes in each party's primary race for gover
 ```{r}
 
 
+dem_rep_precinct%>%
+  mutate(total_votes = election_night_votes + early_votes+ provisional_votes)%>%
+  group_by(election_district_precinct)%>%
+  summarize(mean(county), precinct_votes = sum(total_votes))%>%
+  arrange((precinct_votes))
 
 
 
@@ -126,7 +136,11 @@ Let's look at the average number of votes in each party's primary race for gover
 
 How many precincts are there, and which county has the most? *Put answer here*
 
+**There are 8 precincts, with most from county 17, Prince George's County**
+
 What else would you need to know about these precincts to know whether this might be worth a story? *Put answer here*
+
+**I would want to know more about the demographics of these precincts--education levels, race, etc. to see if there is a connection to lack of voting.**
 
 ### Q3.
 
@@ -134,9 +148,15 @@ Choose your own adventure: I want you to come up with a question you could ask o
 
 First write the question and then try to answer it by writing code. If you're not sure of the exact code at a minimum, describe what you think you'd have to do to answer it and what the results would look like.
 
+**Which candidate received the most total votes?**
+
 ```{r}
 
-
+dem_rep_precinct%>%
+  mutate(total_votes = election_night_votes + early_votes + provisional_votes)%>%
+  group_by(candidate_name)%>%
+  summarize(candidate_votes = sum(total_votes))%>%
+  arrange(desc(candidate_votes))
 
 
 
