@@ -94,7 +94,7 @@ Write code to produce a `votes` column which is the result of adding together `e
 ```{r}
 
 dem_rep_precinct%>%
-  mutate(total_votes = election_night_votes + early_votes+ provisional_votes)
+  mutate(total_votes = election_night_votes + early_votes + provisional_votes)
 
 ```
 
@@ -125,9 +125,12 @@ Let's look at the average number of votes in each party's primary race for gover
 
 dem_rep_precinct%>%
   mutate(total_votes = election_night_votes + early_votes+ provisional_votes)%>%
+  filter(office_name == "Governor / Lt. Governor") %>% 
   group_by(election_district_precinct)%>%
   summarize(mean(county), precinct_votes = sum(total_votes))%>%
   arrange((precinct_votes))
+
+
 
 
 
